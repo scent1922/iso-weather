@@ -9,10 +9,8 @@ import '../providers/weather_provider.dart';
 class DetailScreen extends ConsumerWidget {
   const DetailScreen({super.key});
 
-  // ── helpers ──────────────────────────────────────────────────────────────
-
   String _compassDir(int deg) {
-    const dirs = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+    const dirs = ['북', '북동', '동', '남동', '남', '남서', '서', '북서'];
     return dirs[((deg + 22.5) / 45).floor() % 8];
   }
 
@@ -23,29 +21,68 @@ class DetailScreen extends ConsumerWidget {
     return '매우높음';
   }
 
+  String _uviDesc(double uvi) {
+    if (uvi < 3) return '자외선 걱정 없어요';
+    if (uvi < 6) return '외출 시 자외선 차단 권장';
+    if (uvi < 8) return '자외선 차단제 필수';
+    return '야외 활동을 피하세요';
+  }
+
   String _visibilityKm(int meters) {
     final km = meters / 1000.0;
     return km >= 1 ? '${km.toStringAsFixed(1)} km' : '$meters m';
   }
 
-  String _fmtTime(DateTime dt) => DateFormat('HH:mm').format(dt);
+  String _visibilityDesc(int meters) {
+    if (meters >= 10000) return '시야가 매우 좋습니다';
+    if (meters >= 5000) return '시야가 양호합니다';
+    if (meters >= 1000) return '시야가 다소 제한적입니다';
+    return '시야가 매우 나쁩니다';
+  }
 
-  String _fmtHourly(DateTime dt) => DateFormat('HH:mm').format(dt);
+  String _humidityDesc(int humidity) {
+    if (humidity < 30) return '건조합니다. 수분 섭취 권장';
+    if (humidity < 60) return '쾌적한 습도입니다';
+    if (humidity < 80) return '다소 습합니다';
+    return '매우 습합니다';
+  }
+
+  String _windDesc(double speed) {
+    if (speed < 2) return '바람이 거의 없습니다';
+    if (speed < 5) return '산들바람이 붑니다';
+    if (speed < 9) return '바람이 다소 강합니다';
+    return '강풍이 불고 있습니다';
+  }
+
+  String _pressureDesc(int pressure) {
+    if (pressure < 1000) return '저기압 — 날씨 변화 가능';
+    if (pressure < 1020) return '정상 기압입니다';
+    return '고기압 — 맑은 날씨 예상';
+  }
+
+  String _feelsLikeDesc(double temp, double feelsLike) {
+    final diff = feelsLike - temp;
+    if (diff.abs() < 2) return '실제 기온과 비슷합니다';
+    if (diff < 0) return '바람으로 더 춥게 느껴집니다';
+    return '습도로 더 덥게 느껴집니다';
+  }
+
+  String _fmtTime(DateTime dt) => DateFormat('HH:mm').format(dt);
 
   String _weekdayKo(DateTime dt) {
     const days = ['월', '화', '수', '목', '금', '토', '일'];
     return days[dt.weekday - 1];
   }
 
-  String _weatherIcon(int id) {
-    if (id == 800) return '☀️';
-    if (id > 800) return '☁️';
-    if (id >= 700) return '🌫️';
-    if (id >= 600) return '❄️';
-    if (id >= 500) return '🌧️';
-    if (id >= 300) return '🌦️';
-    if (id >= 200) return '⛈️';
-    return '🌤️';
+  IconData _weatherIconData(int id) {
+    if (id == 800) return Icons.wb_sunny_outlined;
+    if (id > 800) return Icons.cloud_outlined;
+    if (id >= 700) return Icons.blur_on;
+    if (id >= 600) return Icons.ac_unit_outlined;
+    if (id >= 500) return Icons.water_drop_outlined;
+    if (id >= 300) return Icons.grain;
+    if (id >= 200) return Icons.flash_on_outlined;
+    return Icons.wb_sunny_outlined;
   }
 
   double _tempDisplay(double celsius, bool useCelsius) =>
@@ -55,8 +92,6 @@ class DetailScreen extends ConsumerWidget {
     final val = _tempDisplay(celsius, useCelsius);
     return '${val.round()}°${useCelsius ? 'C' : 'F'}';
   }
-
-  // ── glassmorphism container ───────────────────────────────────────────────
 
   Widget _glassContainer({required Widget child, EdgeInsets? padding}) {
     return ClipRRect(
@@ -79,59 +114,70 @@ class DetailScreen extends ConsumerWidget {
     );
   }
 
-  // ── detail grid card ──────────────────────────────────────────────────────
-
   Widget _detailCard({
-    required String icon,
+    required IconData icon,
     required String value,
     required String label,
+    required String description,
   }) {
     const shadow = [
       Shadow(offset: Offset(0, 1), blurRadius: 4, color: Color(0x99000000)),
     ];
     return _glassContainer(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Text(icon, style: const TextStyle(fontSize: 22)),
-          const SizedBox(height: 6),
+          Row(
+            children: [
+              Icon(icon, color: const Color(0xB3FFFFFF), size: 16),
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 11,
+                  color: Colors.white.withValues(alpha: 0.7),
+                  shadows: shadow,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
           Text(
             value,
             style: const TextStyle(
               fontFamily: 'Poppins',
-              fontSize: 16,
+              fontSize: 18,
               fontWeight: FontWeight.w700,
               color: Colors.white,
               shadows: shadow,
             ),
-            textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 2),
+          const SizedBox(height: 4),
           Text(
-            label,
+            description,
             style: TextStyle(
               fontFamily: 'Poppins',
-              fontSize: 11,
-              color: Colors.white.withValues(alpha: 0.75),
+              fontSize: 10,
+              color: Colors.white.withValues(alpha: 0.6),
               shadows: shadow,
+              height: 1.3,
             ),
-            textAlign: TextAlign.center,
           ),
         ],
       ),
     );
   }
 
-  // ── hourly card ───────────────────────────────────────────────────────────
-
   Widget _hourlyCard(HourlyWeather h, bool useCelsius) {
     return _glassContainer(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            _fmtHourly(h.time),
+            DateFormat('HH:mm').format(h.time),
             style: TextStyle(
               fontFamily: 'Poppins',
               fontSize: 11,
@@ -139,7 +185,7 @@ class DetailScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 6),
-          Text(_weatherIcon(h.weatherId), style: const TextStyle(fontSize: 20)),
+          Icon(_weatherIconData(h.weatherId), color: Colors.white, size: 20),
           const SizedBox(height: 6),
           Text(
             _tempStr(h.temp, useCelsius),
@@ -149,10 +195,7 @@ class DetailScreen extends ConsumerWidget {
               fontWeight: FontWeight.w700,
               color: Colors.white,
               shadows: [
-                Shadow(
-                    offset: Offset(0, 1),
-                    blurRadius: 3,
-                    color: Color(0x99000000)),
+                Shadow(offset: Offset(0, 1), blurRadius: 3, color: Color(0x99000000)),
               ],
             ),
           ),
@@ -161,20 +204,13 @@ class DetailScreen extends ConsumerWidget {
     );
   }
 
-  // ── daily row ─────────────────────────────────────────────────────────────
-
-  Widget _dailyRow(
-    DailyWeather d,
-    bool useCelsius,
-    double weekMin,
-    double weekMax,
-  ) {
+  Widget _dailyRow(DailyWeather d, bool useCelsius, double weekMin, double weekMax) {
     final rangeSpan = weekMax - weekMin;
     final barStart = rangeSpan == 0 ? 0.0 : (d.tempMin - weekMin) / rangeSpan;
     final barEnd = rangeSpan == 0 ? 1.0 : (d.tempMax - weekMin) / rangeSpan;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
+      padding: const EdgeInsets.symmetric(vertical: 5),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(12),
         child: BackdropFilter(
@@ -184,58 +220,40 @@ class DetailScreen extends ConsumerWidget {
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: 0.18),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.15),
-                width: 0.5,
-              ),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.15), width: 0.5),
             ),
             child: Row(
               children: [
-                // Day label
                 SizedBox(
                   width: 28,
                   child: Text(
                     _weekdayKo(d.date),
                     style: const TextStyle(
-                      fontFamily: 'Poppins',
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
+                      fontFamily: 'Poppins', fontSize: 13, fontWeight: FontWeight.w600,
                       color: Colors.white,
-                      shadows: [
-                        Shadow(
-                            offset: Offset(0, 1),
-                            blurRadius: 3,
-                            color: Color(0x99000000)),
-                      ],
                     ),
                   ),
                 ),
                 const SizedBox(width: 10),
-                // Icon
-                Text(_weatherIcon(d.weatherId),
-                    style: const TextStyle(fontSize: 18)),
+                Icon(_weatherIconData(d.weatherId), color: Colors.white, size: 18),
                 const SizedBox(width: 12),
-                // Min temp
                 SizedBox(
                   width: 36,
                   child: Text(
                     _tempStr(d.tempMin, useCelsius),
                     style: TextStyle(
-                      fontFamily: 'Poppins',
-                      fontSize: 12,
+                      fontFamily: 'Poppins', fontSize: 12,
                       color: Colors.white.withValues(alpha: 0.7),
                     ),
                     textAlign: TextAlign.right,
                   ),
                 ),
                 const SizedBox(width: 8),
-                // Range bar
                 Expanded(
                   child: LayoutBuilder(builder: (context, constraints) {
                     final total = constraints.maxWidth;
                     return Stack(
                       children: [
-                        // Background track
                         Container(
                           height: 6,
                           decoration: BoxDecoration(
@@ -243,10 +261,9 @@ class DetailScreen extends ConsumerWidget {
                             borderRadius: BorderRadius.circular(3),
                           ),
                         ),
-                        // Filled bar
                         Positioned(
                           left: total * barStart,
-                          width: total * (barEnd - barStart),
+                          width: total * (barEnd - barStart).clamp(0.05, 1.0),
                           child: Container(
                             height: 6,
                             decoration: BoxDecoration(
@@ -262,15 +279,12 @@ class DetailScreen extends ConsumerWidget {
                   }),
                 ),
                 const SizedBox(width: 8),
-                // Max temp
                 SizedBox(
                   width: 36,
                   child: Text(
                     _tempStr(d.tempMax, useCelsius),
                     style: const TextStyle(
-                      fontFamily: 'Poppins',
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
+                      fontFamily: 'Poppins', fontSize: 12, fontWeight: FontWeight.w600,
                       color: Colors.white,
                     ),
                   ),
@@ -283,34 +297,25 @@ class DetailScreen extends ConsumerWidget {
     );
   }
 
-  // ── section title ─────────────────────────────────────────────────────────
-
   Widget _sectionTitle(String text) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Text(
         text,
         style: const TextStyle(
-          fontFamily: 'Poppins',
-          fontSize: 16,
-          fontWeight: FontWeight.w700,
+          fontFamily: 'Poppins', fontSize: 16, fontWeight: FontWeight.w700,
           color: Colors.white,
-          shadows: [
-            Shadow(offset: Offset(0, 1), blurRadius: 4, color: Color(0x99000000)),
-          ],
+          shadows: [Shadow(offset: Offset(0, 1), blurRadius: 4, color: Color(0x99000000))],
         ),
       ),
     );
   }
-
-  // ── build ─────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final weather = ref.watch(weatherProvider);
     final settings = ref.watch(settingsProvider);
 
-    // If no data, show loading indicator
     if (weather.data == null) {
       return const Scaffold(
         backgroundColor: Colors.black,
@@ -321,7 +326,6 @@ class DetailScreen extends ConsumerWidget {
     final data = weather.data!;
     final useCelsius = settings.useCelsius;
 
-    // Compute weekly min/max for the range bar
     double weekMin = data.daily.isNotEmpty ? data.daily.first.tempMin : 0;
     double weekMax = data.daily.isNotEmpty ? data.daily.first.tempMax : 1;
     for (final d in data.daily) {
@@ -329,58 +333,54 @@ class DetailScreen extends ConsumerWidget {
       if (d.tempMax > weekMax) weekMax = d.tempMax;
     }
 
-    // Local sunrise/sunset with timezone offset
-    final sunriseLocal = data.sunrise
-        .toUtc()
-        .add(Duration(seconds: data.timezoneOffset));
-    final sunsetLocal = data.sunset
-        .toUtc()
-        .add(Duration(seconds: data.timezoneOffset));
-
-    // ── detail grid data ──────────────────────────────────────────────────
     final gridItems = [
-      _DetailItem(
-        icon: '🌡️',
+      _DetailGridItem(
+        icon: Icons.thermostat_outlined,
         value: _tempStr(data.feelsLike, useCelsius),
         label: '체감온도',
+        description: _feelsLikeDesc(data.temp, data.feelsLike),
       ),
-      _DetailItem(
-        icon: '💧',
+      _DetailGridItem(
+        icon: Icons.water_drop_outlined,
         value: '${data.humidity}%',
         label: '습도',
+        description: _humidityDesc(data.humidity),
       ),
-      _DetailItem(
-        icon: '💨',
-        value: '${data.windSpeed.toStringAsFixed(1)} m/s\n'
-            '${data.windDeg != null ? _compassDir(data.windDeg!) : '-'}',
-        label: '풍속/풍향',
+      _DetailGridItem(
+        icon: Icons.air,
+        value: '${data.windSpeed.toStringAsFixed(1)} m/s',
+        label: '풍속 ${data.windDeg != null ? _compassDir(data.windDeg!) : ''}',
+        description: _windDesc(data.windSpeed),
       ),
-      _DetailItem(
-        icon: '🔵',
+      _DetailGridItem(
+        icon: Icons.speed_outlined,
         value: data.pressure != null ? '${data.pressure} hPa' : '-',
         label: '기압',
+        description: data.pressure != null ? _pressureDesc(data.pressure!) : '',
       ),
-      _DetailItem(
-        icon: '☀️',
+      _DetailGridItem(
+        icon: Icons.wb_sunny_outlined,
         value: _uviLevel(data.uvi),
-        label: '자외선 (${data.uvi.toStringAsFixed(1)})',
+        label: '자외선 ${data.uvi.toStringAsFixed(1)}',
+        description: _uviDesc(data.uvi),
       ),
-      _DetailItem(
-        icon: '👁️',
+      _DetailGridItem(
+        icon: Icons.visibility_outlined,
         value: data.visibility != null ? _visibilityKm(data.visibility!) : '-',
         label: '가시거리',
+        description: data.visibility != null ? _visibilityDesc(data.visibility!) : '',
       ),
-      _DetailItem(
-        icon: '🌿',
-        value: data.dewPoint != null
-            ? _tempStr(data.dewPoint!, useCelsius)
-            : '-',
+      _DetailGridItem(
+        icon: Icons.dew_point,
+        value: data.dewPoint != null ? _tempStr(data.dewPoint!, useCelsius) : '-',
         label: '이슬점',
+        description: data.dewPoint != null ? '현재 이슬점 ${data.dewPoint!.round()}°입니다' : '',
       ),
-      _DetailItem(
-        icon: '🌅',
-        value: '↑ ${_fmtTime(sunriseLocal)}\n↓ ${_fmtTime(sunsetLocal)}',
-        label: '일출/일몰',
+      _DetailGridItem(
+        icon: Icons.wb_twilight_outlined,
+        value: '${_fmtTime(data.sunrise)} / ${_fmtTime(data.sunset)}',
+        label: '일출 / 일몰',
+        description: '해가 떠 있는 시간: ${data.sunset.difference(data.sunrise).inHours}시간',
       ),
     ];
 
@@ -389,32 +389,23 @@ class DetailScreen extends ConsumerWidget {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // ── Blurred background ──────────────────────────────────────────
           if (weather.imagePath != null)
             ImageFiltered(
               imageFilter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
-              child: Image.asset(
-                weather.imagePath!,
-                fit: BoxFit.cover,
-              ),
+              child: Image.asset(weather.imagePath!, fit: BoxFit.cover),
             ),
-
-          // Dark scrim for readability
           Container(color: Colors.black.withValues(alpha: 0.35)),
 
-          // ── Scrollable content ──────────────────────────────────────────
           SafeArea(
             child: CustomScrollView(
               physics: const BouncingScrollPhysics(),
               slivers: [
-                // Handle bar
                 SliverToBoxAdapter(
                   child: Center(
                     child: Padding(
                       padding: const EdgeInsets.only(top: 10, bottom: 8),
                       child: Container(
-                        width: 36,
-                        height: 4,
+                        width: 36, height: 4,
                         decoration: BoxDecoration(
                           color: Colors.white.withValues(alpha: 0.5),
                           borderRadius: BorderRadius.circular(2),
@@ -424,7 +415,7 @@ class DetailScreen extends ConsumerWidget {
                   ),
                 ),
 
-                // ── Current weather grid ──────────────────────────────────
+                // Weather detail grid
                 SliverPadding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   sliver: SliverGrid(
@@ -435,74 +426,62 @@ class DetailScreen extends ConsumerWidget {
                           icon: item.icon,
                           value: item.value,
                           label: item.label,
+                          description: item.description,
                         );
                       },
                       childCount: gridItems.length,
                     ),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       crossAxisSpacing: 10,
                       mainAxisSpacing: 10,
-                      childAspectRatio: 1.6,
+                      childAspectRatio: 1.3,
                     ),
                   ),
                 ),
 
                 const SliverToBoxAdapter(child: SizedBox(height: 28)),
 
-                // ── Hourly forecast ───────────────────────────────────────
                 if (data.hourly.isNotEmpty) ...[
                   SliverPadding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
-                    sliver: SliverToBoxAdapter(
-                      child: _sectionTitle('시간별 날씨'),
-                    ),
+                    sliver: SliverToBoxAdapter(child: _sectionTitle('시간별 날씨')),
                   ),
                   SliverToBoxAdapter(
                     child: SizedBox(
-                      height: 110,
+                      height: 100,
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         itemCount: data.hourly.length,
-                        separatorBuilder: (context, index) => const SizedBox(width: 8),
-                        itemBuilder: (context, i) =>
-                            SizedBox(
-                              width: 72,
-                              child: _hourlyCard(data.hourly[i], useCelsius),
-                            ),
+                        separatorBuilder: (_, __) => const SizedBox(width: 8),
+                        itemBuilder: (_, i) => SizedBox(
+                          width: 72,
+                          child: _hourlyCard(data.hourly[i], useCelsius),
+                        ),
                       ),
                     ),
                   ),
                   const SliverToBoxAdapter(child: SizedBox(height: 28)),
                 ],
 
-                // ── Daily forecast ────────────────────────────────────────
                 if (data.daily.isNotEmpty) ...[
                   SliverPadding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
-                    sliver: SliverToBoxAdapter(
-                      child: _sectionTitle('주간 날씨'),
-                    ),
+                    sliver: SliverToBoxAdapter(child: _sectionTitle('주간 날씨')),
                   ),
                   SliverPadding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     sliver: SliverList(
                       delegate: SliverChildBuilderDelegate(
-                        (context, i) => _dailyRow(
-                          data.daily[i],
-                          useCelsius,
-                          weekMin,
-                          weekMax,
-                        ),
+                        (_, i) => _dailyRow(data.daily[i], useCelsius, weekMin, weekMax),
                         childCount: data.daily.length,
                       ),
                     ),
                   ),
                 ],
 
-                const SliverToBoxAdapter(child: SizedBox(height: 32)),
+                const SliverToBoxAdapter(child: SizedBox(height: 40)),
               ],
             ),
           ),
@@ -512,14 +491,15 @@ class DetailScreen extends ConsumerWidget {
   }
 }
 
-// Simple data holder for grid items
-class _DetailItem {
-  final String icon;
+class _DetailGridItem {
+  final IconData icon;
   final String value;
   final String label;
-  const _DetailItem({
+  final String description;
+  const _DetailGridItem({
     required this.icon,
     required this.value,
     required this.label,
+    required this.description,
   });
 }
