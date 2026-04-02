@@ -13,9 +13,10 @@ class WeatherBackground extends StatelessWidget {
       child: Image.asset(
         imagePath,
         key: ValueKey(imagePath),
-        fit: BoxFit.cover,
+        fit: BoxFit.contain,
         width: double.infinity,
         height: double.infinity,
+        alignment: Alignment.center,
         errorBuilder: (context, error, stackTrace) {
           return Container(
             color: const Color(0xFF1A1A2E),
