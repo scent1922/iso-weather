@@ -38,6 +38,50 @@ class WeatherService {
       throw WeatherException('네트워크 연결을 확인해주세요.');
     }
   }
+
+  Future<GeocodingResult?> searchCity(String query) async {
+    if (_apiKey.isEmpty || _apiKey == 'YOUR_API_KEY_HERE') return null;
+
+    final uri = Uri.parse('https://api.openweathermap.org/geo/1.0/direct')
+        .replace(queryParameters: {
+      'q': query,
+      'limit': '1',
+      'appid': _apiKey,
+    });
+
+    try {
+      final response = await http.get(uri).timeout(_timeout);
+      if (response.statusCode == 200) {
+        final list = jsonDecode(response.body) as List;
+        if (list.isEmpty) return null;
+        final item = list.first as Map<String, dynamic>;
+        return GeocodingResult(
+          name: item['local_names']?['ko'] as String? ?? item['name'] as String,
+          nameEn: item['name'] as String,
+          lat: (item['lat'] as num).toDouble(),
+          lon: (item['lon'] as num).toDouble(),
+          country: item['country'] as String? ?? '',
+        );
+      }
+    } catch (_) {}
+    return null;
+  }
+}
+
+class GeocodingResult {
+  final String name;
+  final String nameEn;
+  final double lat;
+  final double lon;
+  final String country;
+
+  GeocodingResult({
+    required this.name,
+    required this.nameEn,
+    required this.lat,
+    required this.lon,
+    required this.country,
+  });
 }
 
 class WeatherException implements Exception {

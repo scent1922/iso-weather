@@ -8,6 +8,7 @@ class WeatherData {
   final String weatherDescription;
   final DateTime sunrise;
   final DateTime sunset;
+  final int timezoneOffset; // UTC offset in seconds
 
   WeatherData({
     required this.temp,
@@ -19,7 +20,12 @@ class WeatherData {
     required this.weatherDescription,
     required this.sunrise,
     required this.sunset,
+    this.timezoneOffset = 0,
   });
+
+  /// Local time at the weather location
+  DateTime get localNow =>
+      DateTime.now().toUtc().add(Duration(seconds: timezoneOffset));
 
   factory WeatherData.fromJson(Map<String, dynamic> json) {
     final current = json['current'] as Map<String, dynamic>;
@@ -39,6 +45,7 @@ class WeatherData {
       sunset: DateTime.fromMillisecondsSinceEpoch(
         (current['sunset'] as int) * 1000,
       ),
+      timezoneOffset: json['timezone_offset'] as int? ?? 0,
     );
   }
 
@@ -52,6 +59,7 @@ class WeatherData {
     'weatherDescription': weatherDescription,
     'sunrise': sunrise.millisecondsSinceEpoch,
     'sunset': sunset.millisecondsSinceEpoch,
+    'timezoneOffset': timezoneOffset,
   };
 
   factory WeatherData.fromCache(Map<String, dynamic> json) {
@@ -65,6 +73,7 @@ class WeatherData {
       weatherDescription: json['weatherDescription'] as String,
       sunrise: DateTime.fromMillisecondsSinceEpoch(json['sunrise'] as int),
       sunset: DateTime.fromMillisecondsSinceEpoch(json['sunset'] as int),
+      timezoneOffset: json['timezoneOffset'] as int? ?? 0,
     );
   }
 }

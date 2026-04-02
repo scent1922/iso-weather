@@ -39,7 +39,7 @@ class City {
     double minDistance = double.infinity;
 
     for (final city in supportedCities) {
-      final distance = _calculateDistance(lat, lon, city.lat, city.lon);
+      final distance = calculateDistance(lat, lon, city.lat, city.lon);
       if (distance < minDistance) {
         minDistance = distance;
         closest = city;
@@ -49,7 +49,7 @@ class City {
     return closest;
   }
 
-  static double _calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+  static double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
     final dLat = lat2 - lat1;
     final dLon = lon2 - lon1;
     return dLat * dLat + dLon * dLon;

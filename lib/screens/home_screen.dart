@@ -7,6 +7,7 @@ import '../widgets/clothing_card.dart';
 import '../widgets/offline_banner.dart';
 import '../widgets/particle_overlay.dart';
 import '../widgets/weather_background.dart';
+import '../widgets/city_search_bar.dart';
 import '../widgets/weather_details.dart';
 import '../widgets/weather_info.dart';
 import 'settings_screen.dart';
@@ -122,6 +123,13 @@ class HomeScreen extends ConsumerWidget {
 
                   const SizedBox(height: 4),
 
+                  // Search bar
+                  CitySearchBar(
+                    onSearch: (query) => _handleSearch(context, ref, query),
+                  ),
+
+                  const SizedBox(height: 4),
+
                   // City name, date, weather, temperature
                   WeatherInfo(
                     cityName: weather.city.nameKo,
@@ -230,6 +238,47 @@ class HomeScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  void _handleSearch(BuildContext context, WidgetRef ref, String query) async {
+    final message = await ref.read(weatherProvider.notifier).searchCity(query);
+    if (message != null && context.mounted) {
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          backgroundColor: const Color(0xFF1A1A2E),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: const Text(
+            '알림',
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: Text(
+            message,
+            style: const TextStyle(
+              fontFamily: 'Poppins',
+              color: Colors.white70,
+              height: 1.5,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text(
+                '확인',
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  color: Color(0xFF90CAF9),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   Route _slideRoute(Widget page) {

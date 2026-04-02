@@ -27,8 +27,9 @@ class ImageSelector {
     required int weatherCode,
     required DateTime sunrise,
     required DateTime sunset,
+    double lat = 0,
   }) {
-    final season = _getSeason(now.month);
+    final season = _getSeason(now.month, isSouthern: lat < 0);
     final timeOfDay = _getTimeOfDay(now, sunrise, sunset);
     final weather = _getWeatherCategory(weatherCode);
 
@@ -50,11 +51,29 @@ class ImageSelector {
     return 'assets/images/cities/${cityId}_spring_day_clear.webp';
   }
 
-  static String _getSeason(int month) {
-    if (month >= 3 && month <= 5) return 'spring';
-    if (month >= 6 && month <= 8) return 'summer';
-    if (month >= 9 && month <= 11) return 'autumn';
-    return 'winter';
+  static String _getSeason(int month, {bool isSouthern = false}) {
+    String season;
+    if (month >= 3 && month <= 5) {
+      season = 'spring';
+    } else if (month >= 6 && month <= 8) {
+      season = 'summer';
+    } else if (month >= 9 && month <= 11) {
+      season = 'autumn';
+    } else {
+      season = 'winter';
+    }
+
+    if (isSouthern) {
+      // Invert seasons for southern hemisphere
+      switch (season) {
+        case 'spring': return 'autumn';
+        case 'summer': return 'winter';
+        case 'autumn': return 'spring';
+        case 'winter': return 'summer';
+      }
+    }
+
+    return season;
   }
 
   static String _getTimeOfDay(DateTime now, DateTime sunrise, DateTime sunset) {

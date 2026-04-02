@@ -125,13 +125,14 @@ class WeatherNotifier extends StateNotifier<WeatherState> {
   }
 
   void _updateState(WeatherData data, City city, {bool offline = false}) {
-    final now = DateTime.now();
+    final localNow = data.localNow;
     final imagePath = ImageSelector.getImagePath(
       cityId: city.id,
-      now: now,
+      now: localNow,
       weatherCode: data.weatherId,
       sunrise: data.sunrise,
       sunset: data.sunset,
+      lat: city.lat,
     );
     final recommendation = _clothingRecommender.getRecommendation(data);
 
@@ -148,6 +149,83 @@ class WeatherNotifier extends StateNotifier<WeatherState> {
   Future<void> refreshWeather() async {
     await _cacheService.clearCache();
     await loadWeather();
+  }
+
+  /// Search a city by name and load its weather.
+  /// Returns a message if the city is unsupported (uses closest match).
+  Future<String?> searchCity(String query) async {
+    state = state.copyWith(status: WeatherStatus.loading);
+
+    try {
+      final result = await _weatherService.searchCity(query);
+      if (result == null) {
+        // Restore previous state
+        if (state.data != null) {
+          state = state.copyWith(status: WeatherStatus.success);
+        }
+        return '검색 결과를 찾을 수 없습니다.';
+      }
+
+      // Check if this is a supported city
+      final closestCity = City.findClosest(result.lat, result.lon)!;
+      final distance = City.calculateDistance(
+        result.lat, result.lon, closestCity.lat, closestCity.lon,
+      );
+
+      // If distance is very close (< ~2 degrees), treat as same city
+      final isSupported = distance < 4.0;
+
+      // Build a temporary city for display
+      final displayCity = isSupported
+          ? closestCity
+          : City(
+              id: closestCity.id,
+              nameKo: result.name,
+              nameEn: result.nameEn,
+              lat: result.lat,
+              lon: result.lon,
+            );
+
+      // Fetch weather for the searched coordinates
+      final data = await _weatherService.fetchWeather(result.lat, result.lon);
+
+      // Use closest supported city's images
+      final localNow = data.localNow;
+      final imagePath = ImageSelector.getImagePath(
+        cityId: closestCity.id,
+        now: localNow,
+        weatherCode: data.weatherId,
+        sunrise: data.sunrise,
+        sunset: data.sunset,
+        lat: result.lat,
+      );
+      final recommendation = _clothingRecommender.getRecommendation(data);
+
+      state = WeatherState(
+        status: WeatherStatus.success,
+        data: data,
+        city: displayCity,
+        imagePath: imagePath,
+        recommendation: recommendation,
+        lastUpdate: DateTime.now(),
+      );
+
+      if (!isSupported) {
+        return '아직 지원하지 않는 도시입니다. 대신 ${result.name}과(와) 가장 가까운 ${closestCity.nameKo}의 이미지를 보여드릴게요.';
+      }
+
+      return null;
+    } catch (e) {
+      if (state.data != null) {
+        state = state.copyWith(status: WeatherStatus.success);
+      } else {
+        state = state.copyWith(
+          status: WeatherStatus.error,
+          errorMessage: e.toString(),
+        );
+      }
+      return '검색 중 오류가 발생했습니다.';
+    }
   }
 }
 
