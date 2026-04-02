@@ -175,16 +175,8 @@ class WeatherNotifier extends StateNotifier<WeatherState> {
       // If distance is very close (< ~2 degrees), treat as same city
       final isSupported = distance < 4.0;
 
-      // Build a temporary city for display
-      final displayCity = isSupported
-          ? closestCity
-          : City(
-              id: closestCity.id,
-              nameKo: result.name,
-              nameEn: result.nameEn,
-              lat: result.lat,
-              lon: result.lon,
-            );
+      // Always display the closest supported city's name and use its images
+      final displayCity = closestCity;
 
       // Fetch weather for the searched coordinates
       final data = await _weatherService.fetchWeather(result.lat, result.lon);
