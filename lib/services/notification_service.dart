@@ -31,7 +31,6 @@ class NotificationService {
 
     await _plugin.initialize(initSettings);
 
-    // Request iOS permissions explicitly
     await _plugin
         .resolvePlatformSpecificImplementation<
             IOSFlutterLocalNotificationsPlugin>()
