@@ -7,6 +7,7 @@ import '../widgets/clothing_card.dart';
 import '../widgets/offline_banner.dart';
 import '../widgets/particle_overlay.dart';
 import '../widgets/weather_background.dart';
+import '../widgets/weather_details.dart';
 import '../widgets/weather_info.dart';
 import 'settings_screen.dart';
 
@@ -123,18 +124,25 @@ class HomeScreen extends ConsumerWidget {
 
                   const SizedBox(height: 16),
 
-                  // City name, date, temperature + details
+                  // City name, date, weather, temperature
                   WeatherInfo(
                     cityName: weather.city.nameKo,
                     temperature: data.temp,
-                    feelsLike: data.feelsLike,
-                    humidity: data.humidity,
-                    windSpeed: data.windSpeed,
                     weatherDescription: data.weatherDescription,
                     useCelsius: settings.useCelsius,
                   ),
 
                   const Spacer(),
+
+                  // Sub-info: feels-like, humidity, wind (between image and card)
+                  WeatherDetails(
+                    feelsLike: data.feelsLike,
+                    humidity: data.humidity,
+                    windSpeed: data.windSpeed,
+                    useCelsius: settings.useCelsius,
+                  ),
+
+                  const SizedBox(height: 12),
 
                   // Clothing recommendation
                   if (weather.recommendation != null)

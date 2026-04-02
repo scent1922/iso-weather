@@ -4,9 +4,6 @@ import 'package:intl/intl.dart';
 class WeatherInfo extends StatefulWidget {
   final String cityName;
   final double temperature;
-  final double feelsLike;
-  final int humidity;
-  final double windSpeed;
   final String weatherDescription;
   final bool useCelsius;
 
@@ -14,9 +11,6 @@ class WeatherInfo extends StatefulWidget {
     super.key,
     required this.cityName,
     required this.temperature,
-    required this.feelsLike,
-    required this.humidity,
-    required this.windSpeed,
     required this.weatherDescription,
     required this.useCelsius,
   });
@@ -56,8 +50,6 @@ class _WeatherInfoState extends State<WeatherInfo>
     final dateStr = DateFormat('yyyy.MM.dd').format(now);
     final tempValue =
         widget.useCelsius ? widget.temperature : (widget.temperature * 9 / 5 + 32);
-    final feelsLikeValue =
-        widget.useCelsius ? widget.feelsLike : (widget.feelsLike * 9 / 5 + 32);
     final tempUnit = widget.useCelsius ? '°C' : '°F';
 
     return FadeTransition(
@@ -65,7 +57,6 @@ class _WeatherInfoState extends State<WeatherInfo>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // City name
           Text(
             widget.cityName,
             style: const TextStyle(
@@ -74,16 +65,11 @@ class _WeatherInfoState extends State<WeatherInfo>
               fontWeight: FontWeight.bold,
               color: Colors.white,
               shadows: [
-                Shadow(
-                    offset: Offset(0, 1),
-                    blurRadius: 6,
-                    color: Color(0x99000000)),
+                Shadow(offset: Offset(0, 1), blurRadius: 6, color: Color(0x99000000)),
               ],
             ),
           ),
-          const SizedBox(height: 4),
-
-          // Date
+          const SizedBox(height: 2),
           Text(
             dateStr,
             style: const TextStyle(
@@ -91,16 +77,11 @@ class _WeatherInfoState extends State<WeatherInfo>
               fontSize: 14,
               color: Color(0xB3FFFFFF),
               shadows: [
-                Shadow(
-                    offset: Offset(0, 1),
-                    blurRadius: 4,
-                    color: Color(0x80000000)),
+                Shadow(offset: Offset(0, 1), blurRadius: 4, color: Color(0x80000000)),
               ],
             ),
           ),
-          const SizedBox(height: 4),
-
-          // Weather description
+          const SizedBox(height: 2),
           Text(
             widget.weatherDescription,
             style: const TextStyle(
@@ -110,90 +91,23 @@ class _WeatherInfoState extends State<WeatherInfo>
               color: Color(0xCCFFFFFF),
               letterSpacing: 0.5,
               shadows: [
-                Shadow(
-                    offset: Offset(0, 1),
-                    blurRadius: 4,
-                    color: Color(0x80000000)),
+                Shadow(offset: Offset(0, 1), blurRadius: 4, color: Color(0x80000000)),
               ],
             ),
           ),
-          const SizedBox(height: 8),
-
-          // Main temperature
+          const SizedBox(height: 4),
           Text(
             '${tempValue.round()}$tempUnit',
             style: const TextStyle(
               fontFamily: 'Poppins',
-              fontSize: 68,
+              fontSize: 64,
               fontWeight: FontWeight.bold,
               color: Colors.white,
               letterSpacing: -2,
               shadows: [
-                Shadow(
-                    offset: Offset(0, 2),
-                    blurRadius: 10,
-                    color: Color(0x99000000)),
+                Shadow(offset: Offset(0, 2), blurRadius: 10, color: Color(0x99000000)),
               ],
             ),
-          ),
-
-          // Feels-like temperature
-          Text(
-            '체감 ${feelsLikeValue.round()}$tempUnit',
-            style: const TextStyle(
-              fontFamily: 'Poppins',
-              fontSize: 14,
-              fontWeight: FontWeight.w300,
-              color: Color(0xB3FFFFFF),
-              shadows: [
-                Shadow(
-                    offset: Offset(0, 1),
-                    blurRadius: 4,
-                    color: Color(0x80000000)),
-              ],
-            ),
-          ),
-          const SizedBox(height: 12),
-
-          // Humidity and wind row
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.water_drop_outlined,
-                  color: Color(0xB3FFFFFF), size: 16),
-              const SizedBox(width: 4),
-              Text(
-                '${widget.humidity}%',
-                style: const TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 13,
-                  color: Color(0xB3FFFFFF),
-                  shadows: [
-                    Shadow(
-                        offset: Offset(0, 1),
-                        blurRadius: 4,
-                        color: Color(0x80000000)),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 16),
-              const Icon(Icons.air, color: Color(0xB3FFFFFF), size: 16),
-              const SizedBox(width: 4),
-              Text(
-                '${widget.windSpeed.toStringAsFixed(1)} m/s',
-                style: const TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 13,
-                  color: Color(0xB3FFFFFF),
-                  shadows: [
-                    Shadow(
-                        offset: Offset(0, 1),
-                        blurRadius: 4,
-                        color: Color(0x80000000)),
-                  ],
-                ),
-              ),
-            ],
           ),
         ],
       ),

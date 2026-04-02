@@ -16,40 +16,35 @@ class ClothingCard extends StatelessWidget {
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.18),
+            color: Colors.black.withValues(alpha: 0.25),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: Colors.white.withValues(alpha: 0.25),
+              color: Colors.white.withValues(alpha: 0.15),
               width: 0.5,
             ),
           ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Column(
             children: [
-              const Padding(
-                padding: EdgeInsets.only(top: 2),
-                child: Icon(
-                  Icons.checkroom,
-                  color: Colors.white70,
-                  size: 20,
-                ),
+              const Icon(
+                Icons.checkroom,
+                color: Color(0xCCFFFFFF),
+                size: 20,
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  message,
-                  textAlign: TextAlign.left,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.white,
-                    height: 1.6,
-                    shadows: [
-                      Shadow(
-                          offset: Offset(0, 1),
-                          blurRadius: 4,
-                          color: Color(0x80000000)),
-                    ],
-                  ),
+              const SizedBox(height: 8),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 15,
+                  color: Color(0xF0FFFFFF),
+                  height: 1.6,
+                  shadows: [
+                    Shadow(
+                        offset: Offset(0, 1),
+                        blurRadius: 6,
+                        color: Color(0xAA000000)),
+                  ],
                 ),
               ),
             ],
