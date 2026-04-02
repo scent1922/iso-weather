@@ -16,7 +16,7 @@ class ClothingCard extends StatelessWidget {
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
           decoration: BoxDecoration(
-            color: Colors.black.withValues(alpha: 0.25),
+            color: Colors.white.withValues(alpha: 0.18),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: Colors.white.withValues(alpha: 0.15),
@@ -27,7 +27,7 @@ class ClothingCard extends StatelessWidget {
             children: [
               const Icon(
                 Icons.checkroom,
-                color: Color(0xCCFFFFFF),
+                color: Color(0xFF1A1A2E),
                 size: 20,
               ),
               const SizedBox(height: 8),
@@ -37,14 +37,9 @@ class ClothingCard extends StatelessWidget {
                 style: const TextStyle(
                   fontFamily: 'Poppins',
                   fontSize: 15,
-                  color: Color(0xF0FFFFFF),
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF1A1A2E),
                   height: 1.6,
-                  shadows: [
-                    Shadow(
-                        offset: Offset(0, 1),
-                        blurRadius: 6,
-                        color: Color(0xAA000000)),
-                  ],
                 ),
               ),
             ],

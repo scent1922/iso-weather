@@ -61,7 +61,7 @@ class _WeatherInfoState extends State<WeatherInfo>
             widget.cityName,
             style: const TextStyle(
               fontFamily: 'Poppins',
-              fontSize: 26,
+              fontSize: 24,
               fontWeight: FontWeight.bold,
               color: Colors.white,
               shadows: [
@@ -95,12 +95,12 @@ class _WeatherInfoState extends State<WeatherInfo>
               ],
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 2),
           Text(
             '${tempValue.round()}$tempUnit',
             style: const TextStyle(
               fontFamily: 'Poppins',
-              fontSize: 64,
+              fontSize: 56,
               fontWeight: FontWeight.bold,
               color: Colors.white,
               letterSpacing: -2,

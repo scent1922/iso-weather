@@ -87,8 +87,6 @@ class HomeScreen extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
                 children: [
-                  const SizedBox(height: 8),
-
                   // Top bar: offline banner + settings
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -122,7 +120,7 @@ class HomeScreen extends ConsumerWidget {
                     ],
                   ),
 
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 4),
 
                   // City name, date, weather, temperature
                   WeatherInfo(
