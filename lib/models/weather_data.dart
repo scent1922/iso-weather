@@ -133,10 +133,12 @@ class WeatherData {
       weatherDescription: weather['description'] as String,
       sunrise: DateTime.fromMillisecondsSinceEpoch(
         (current['sunrise'] as int) * 1000,
-      ),
+        isUtc: true,
+      ).add(Duration(seconds: tzOffset)),
       sunset: DateTime.fromMillisecondsSinceEpoch(
         (current['sunset'] as int) * 1000,
-      ),
+        isUtc: true,
+      ).add(Duration(seconds: tzOffset)),
       timezoneOffset: tzOffset,
       pressure: current['pressure'] as int?,
       visibility: current['visibility'] as int?,
