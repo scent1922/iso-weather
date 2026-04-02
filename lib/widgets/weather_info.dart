@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../config/weather_translations.dart';
 
 class WeatherInfo extends StatefulWidget {
   final String cityName;
@@ -83,7 +84,7 @@ class _WeatherInfoState extends State<WeatherInfo>
           ),
           const SizedBox(height: 2),
           Text(
-            widget.weatherDescription,
+            WeatherTranslations.translate(widget.weatherDescription),
             style: const TextStyle(
               fontFamily: 'Poppins',
               fontSize: 15,
