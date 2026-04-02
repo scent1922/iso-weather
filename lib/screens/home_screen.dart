@@ -22,6 +22,8 @@ class HomeScreen extends ConsumerWidget {
       backgroundColor: Colors.black,
       body: RefreshIndicator(
         onRefresh: () => ref.read(weatherProvider.notifier).refreshWeather(),
+        color: Colors.white,
+        backgroundColor: Colors.white24,
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           child: SizedBox(
@@ -46,103 +48,181 @@ class HomeScreen extends ConsumerWidget {
     }
 
     if (weather.status == WeatherStatus.error && weather.data == null) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.cloud_off, color: Colors.white38, size: 64),
-            const SizedBox(height: 16),
-            Text(
-              weather.errorMessage ?? '날씨 데이터를 불러올 수 없습니다.',
-              style: const TextStyle(color: Colors.white70, fontSize: 16),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () => ref.read(weatherProvider.notifier).refreshWeather(),
-              child: const Text('다시 시도'),
-            ),
-          ],
-        ),
-      );
+      return _buildErrorScreen(context, ref, weather.errorMessage);
     }
 
     final data = weather.data!;
     final weatherCategory = ImageSelector.getWeatherCategory(data.weatherId);
 
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        // Background image
-        if (weather.imagePath != null)
-          WeatherBackground(imagePath: weather.imagePath!),
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.0, end: 1.0),
+      duration: const Duration(milliseconds: 600),
+      curve: Curves.easeOut,
+      builder: (context, value, child) {
+        return Opacity(
+          opacity: value,
+          child: Transform.translate(
+            offset: Offset(0, 20 * (1 - value)),
+            child: child,
+          ),
+        );
+      },
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          // Background image
+          if (weather.imagePath != null)
+            WeatherBackground(imagePath: weather.imagePath!),
 
-        // Particle overlay
-        ParticleOverlay(
-          weatherType: weatherCategory,
-          enabled: settings.particleEnabled,
-        ),
+          // Particle overlay
+          ParticleOverlay(
+            weatherType: weatherCategory,
+            enabled: settings.particleEnabled,
+          ),
 
-        // Content overlay
-        SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Column(
-              children: [
-                const SizedBox(height: 8),
+          // Content overlay
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                children: [
+                  const SizedBox(height: 8),
 
-                // Top bar: offline banner + settings
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    if (weather.status == WeatherStatus.offline)
-                      OfflineBanner(lastUpdate: weather.lastUpdate)
-                    else
-                      const SizedBox.shrink(),
-                    GestureDetector(
-                      onTap: () => Navigator.push(
-                        context,
-                        _slideRoute(const SettingsScreen()),
-                      ),
-                      child: Container(
-                        width: 44,
-                        height: 44,
-                        alignment: Alignment.center,
-                        child: const Icon(
-                          Icons.settings,
-                          color: Colors.white,
-                          size: 24,
-                          shadows: [
-                            Shadow(offset: Offset(0, 1), blurRadius: 4, color: Color(0x80000000)),
-                          ],
+                  // Top bar: offline banner + settings
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      if (weather.status == WeatherStatus.offline)
+                        OfflineBanner(lastUpdate: weather.lastUpdate)
+                      else
+                        const SizedBox.shrink(),
+                      GestureDetector(
+                        onTap: () => Navigator.push(
+                          context,
+                          _slideRoute(const SettingsScreen()),
+                        ),
+                        child: Container(
+                          width: 44,
+                          height: 44,
+                          alignment: Alignment.center,
+                          child: const Icon(
+                            Icons.settings,
+                            color: Colors.white,
+                            size: 24,
+                            shadows: [
+                              Shadow(
+                                  offset: Offset(0, 1),
+                                  blurRadius: 4,
+                                  color: Color(0x80000000)),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 16),
-
-                // City name, date, temperature
-                WeatherInfo(
-                  cityName: weather.city.nameKo,
-                  temperature: data.temp,
-                  useCelsius: settings.useCelsius,
-                ),
-
-                const Spacer(),
-
-                // Clothing recommendation
-                if (weather.recommendation != null)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 48),
-                    child: ClothingCard(message: weather.recommendation!.message),
+                    ],
                   ),
+
+                  const SizedBox(height: 16),
+
+                  // City name, date, temperature + details
+                  WeatherInfo(
+                    cityName: weather.city.nameKo,
+                    temperature: data.temp,
+                    feelsLike: data.feelsLike,
+                    humidity: data.humidity,
+                    windSpeed: data.windSpeed,
+                    weatherDescription: data.weatherDescription,
+                    useCelsius: settings.useCelsius,
+                  ),
+
+                  const Spacer(),
+
+                  // Clothing recommendation
+                  if (weather.recommendation != null)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 48),
+                      child: ClothingCard(message: weather.recommendation!.message),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorScreen(
+      BuildContext context, WidgetRef ref, String? errorMessage) {
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFF87CEEB), Color(0xFF5BA8CC)],
+        ),
+      ),
+      child: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.cloud_off_rounded,
+                  color: Colors.white,
+                  size: 80,
+                ),
+                const SizedBox(height: 24),
+                const Text(
+                  '날씨 정보를 불러올 수 없어요',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  errorMessage ?? '네트워크 연결을 확인하고 다시 시도해주세요.',
+                  style: const TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 14,
+                    color: Color(0xCCFFFFFF),
+                    height: 1.5,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 36),
+                ElevatedButton.icon(
+                  onPressed: () =>
+                      ref.read(weatherProvider.notifier).refreshWeather(),
+                  icon: const Icon(Icons.refresh_rounded, size: 18),
+                  label: const Text(
+                    '다시 시도',
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: const Color(0xFF5BA8CC),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 32, vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    elevation: 0,
+                  ),
+                ),
               ],
             ),
           ),
         ),
-      ],
+      ),
     );
   }
 
@@ -153,7 +233,8 @@ class HomeScreen extends ConsumerWidget {
         const begin = Offset(1.0, 0.0);
         const end = Offset.zero;
         const curve = Curves.easeInOut;
-        final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        final tween =
+            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
         return SlideTransition(position: animation.drive(tween), child: child);
       },
     );

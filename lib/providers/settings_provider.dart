@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../services/notification_service.dart';
 
 class SettingsState {
   final bool useCelsius;
@@ -42,7 +43,10 @@ class SettingsState {
 }
 
 class SettingsNotifier extends StateNotifier<SettingsState> {
+  final NotificationService _notificationService = NotificationService();
+
   SettingsNotifier() : super(const SettingsState()) {
+    _notificationService.initialize();
     _load();
   }
 
@@ -88,11 +92,22 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
   void setNotificationEnabled(bool value) {
     state = state.copyWith(notificationEnabled: value);
     _save();
+    if (value) {
+      _notificationService.scheduleDailyNotification(
+        state.notificationHour,
+        state.notificationMinute,
+      );
+    } else {
+      _notificationService.cancelNotification();
+    }
   }
 
   void setNotificationTime(int hour, int minute) {
     state = state.copyWith(notificationHour: hour, notificationMinute: minute);
     _save();
+    if (state.notificationEnabled) {
+      _notificationService.scheduleDailyNotification(hour, minute);
+    }
   }
 
   void setParticleEnabled(bool value) {

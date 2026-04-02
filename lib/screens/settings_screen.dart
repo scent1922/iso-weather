@@ -17,7 +17,14 @@ class SettingsScreen extends ConsumerWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text('설정', style: TextStyle(color: Colors.white)),
+        title: const Text(
+          '설정',
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: ListView(
@@ -48,7 +55,8 @@ class SettingsScreen extends ConsumerWidget {
               style: const TextStyle(color: Colors.white60),
             ),
             trailing: const Icon(Icons.chevron_right, color: Colors.white38),
-            onTap: () => _showCityPicker(context, ref, settings.selectedCityId),
+            onTap: () =>
+                _showCityPicker(context, ref, settings.selectedCityId),
           ),
 
           const Divider(color: Colors.white12),
@@ -73,12 +81,14 @@ class SettingsScreen extends ConsumerWidget {
 
           if (settings.notificationEnabled)
             ListTile(
-              title: const Text('알림 시간', style: TextStyle(color: Colors.white)),
+              title:
+                  const Text('알림 시간', style: TextStyle(color: Colors.white)),
               subtitle: Text(
                 '${settings.notificationHour.toString().padLeft(2, '0')}:${settings.notificationMinute.toString().padLeft(2, '0')}',
                 style: const TextStyle(color: Colors.white60),
               ),
-              trailing: const Icon(Icons.chevron_right, color: Colors.white38),
+              trailing:
+                  const Icon(Icons.chevron_right, color: Colors.white38),
               onTap: () => _showTimePicker(context, ref, settings),
             ),
 
@@ -91,7 +101,8 @@ class SettingsScreen extends ConsumerWidget {
           ),
           const ListTile(
             title: Text('크레딧', style: TextStyle(color: Colors.white)),
-            subtitle: Text('Minicast by scent1922', style: TextStyle(color: Colors.white60)),
+            subtitle:
+                Text('Minicast by scent1922', style: TextStyle(color: Colors.white60)),
           ),
         ],
       ),
@@ -99,15 +110,21 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   Widget _buildSection(String title) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 24, 16, 10),
+      decoration: const BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: Color(0x1A90CAF9), width: 1),
+        ),
+      ),
       child: Text(
         title,
         style: const TextStyle(
+          fontFamily: 'Poppins',
           fontSize: 13,
           fontWeight: FontWeight.w600,
           color: Color(0xFF90CAF9),
-          letterSpacing: 0.5,
+          letterSpacing: 0.8,
         ),
       ),
     );
@@ -128,7 +145,8 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  void _showCityPicker(BuildContext context, WidgetRef ref, String currentCityId) {
+  void _showCityPicker(
+      BuildContext context, WidgetRef ref, String currentCityId) {
     showModalBottomSheet(
       context: context,
       backgroundColor: const Color(0xFF1A1A2E),
@@ -140,10 +158,11 @@ class SettingsScreen extends ConsumerWidget {
           shrinkWrap: true,
           children: [
             const Padding(
-              padding: EdgeInsets.all(16),
+              padding: EdgeInsets.fromLTRB(16, 20, 16, 12),
               child: Text(
                 '도시 선택',
                 style: TextStyle(
+                  fontFamily: 'Poppins',
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
@@ -151,31 +170,63 @@ class SettingsScreen extends ConsumerWidget {
                 textAlign: TextAlign.center,
               ),
             ),
-            ...City.supportedCities.map((city) => ListTile(
-              title: Text(city.nameKo, style: const TextStyle(color: Colors.white)),
-              subtitle: Text(city.nameEn, style: const TextStyle(color: Colors.white60)),
-              trailing: city.id == currentCityId
-                  ? const Icon(Icons.check, color: Color(0xFF90CAF9))
-                  : null,
-              onTap: () {
-                ref.read(settingsProvider.notifier).setSelectedCity(city.id);
-                ref.read(weatherProvider.notifier).loadWeather();
-                Navigator.pop(context);
-              },
-            )),
+            ...City.supportedCities.map((city) {
+              final thumbPath =
+                  'assets/images/cities/${city.id}_spring_day_clear.webp';
+              return ListTile(
+                leading: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.asset(
+                    thumbPath,
+                    width: 48,
+                    height: 48,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: Colors.white12,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(Icons.location_city,
+                          color: Colors.white38, size: 24),
+                    ),
+                  ),
+                ),
+                title:
+                    Text(city.nameKo, style: const TextStyle(color: Colors.white)),
+                subtitle: Text(city.nameEn,
+                    style: const TextStyle(color: Colors.white60)),
+                trailing: city.id == currentCityId
+                    ? const Icon(Icons.check, color: Color(0xFF90CAF9))
+                    : null,
+                onTap: () {
+                  ref
+                      .read(settingsProvider.notifier)
+                      .setSelectedCity(city.id);
+                  ref.read(weatherProvider.notifier).loadWeather();
+                  Navigator.pop(context);
+                },
+              );
+            }),
           ],
         );
       },
     );
   }
 
-  void _showTimePicker(BuildContext context, WidgetRef ref, SettingsState settings) async {
+  void _showTimePicker(
+      BuildContext context, WidgetRef ref, SettingsState settings) async {
     final time = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay(hour: settings.notificationHour, minute: settings.notificationMinute),
+      initialTime: TimeOfDay(
+          hour: settings.notificationHour,
+          minute: settings.notificationMinute),
     );
     if (time != null) {
-      ref.read(settingsProvider.notifier).setNotificationTime(time.hour, time.minute);
+      ref
+          .read(settingsProvider.notifier)
+          .setNotificationTime(time.hour, time.minute);
     }
   }
 }
