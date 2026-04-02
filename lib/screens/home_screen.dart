@@ -12,35 +12,96 @@ import '../widgets/city_search_bar.dart';
 import '../widgets/weather_details.dart';
 import '../widgets/weather_info.dart';
 import 'settings_screen.dart';
+import 'detail_screen.dart';
 
-class HomeScreen extends ConsumerWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  final PageController _pageController = PageController();
+  int _currentPage = 0;
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final weather = ref.watch(weatherProvider);
     final settings = ref.watch(settingsProvider);
 
     return Scaffold(
       backgroundColor: Colors.black,
-      body: RefreshIndicator(
-        onRefresh: () => ref.read(weatherProvider.notifier).refreshWeather(),
-        color: Colors.white,
-        backgroundColor: Colors.white24,
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: SizedBox(
-            height: MediaQuery.of(context).size.height,
-            child: _buildContent(context, ref, weather, settings),
+      body: Stack(
+        children: [
+          PageView(
+            controller: _pageController,
+            onPageChanged: (index) => setState(() => _currentPage = index),
+            children: [
+              // Page 1: main weather screen
+              RefreshIndicator(
+                onRefresh: () =>
+                    ref.read(weatherProvider.notifier).refreshWeather(),
+                color: Colors.white,
+                backgroundColor: Colors.white24,
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height,
+                    child: _buildContent(context, weather, settings),
+                  ),
+                ),
+              ),
+              // Page 2: detail screen
+              const DetailScreen(),
+            ],
           ),
-        ),
+
+          // Page indicator dots
+          Positioned(
+            bottom: MediaQuery.of(context).padding.bottom + 14,
+            left: 0,
+            right: 0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(2, (i) {
+                final active = i == _currentPage;
+                return AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  width: active ? 18 : 6,
+                  height: 6,
+                  decoration: BoxDecoration(
+                    color: Colors.white
+                        .withValues(alpha: active ? 0.95 : 0.4),
+                    borderRadius: BorderRadius.circular(3),
+                    boxShadow: active
+                        ? [
+                            const BoxShadow(
+                              color: Color(0x55000000),
+                              blurRadius: 4,
+                              offset: Offset(0, 1),
+                            ),
+                          ]
+                        : null,
+                  ),
+                );
+              }),
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildContent(
     BuildContext context,
-    WidgetRef ref,
     WeatherState weather,
     SettingsState settings,
   ) {
@@ -51,7 +112,7 @@ class HomeScreen extends ConsumerWidget {
     }
 
     if (weather.status == WeatherStatus.error && weather.data == null) {
-      return _buildErrorScreen(context, ref, weather.errorMessage);
+      return _buildErrorScreen(context, weather.errorMessage);
     }
 
     final data = weather.data!;
@@ -126,7 +187,7 @@ class HomeScreen extends ConsumerWidget {
 
                   // Search bar
                   CitySearchBar(
-                    onSearch: (query) => _handleSearch(context, ref, query),
+                    onSearch: (query) => _handleSearch(context, query),
                   ),
 
                   const SizedBox(height: 4),
@@ -166,8 +227,7 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildErrorScreen(
-      BuildContext context, WidgetRef ref, String? errorMessage) {
+  Widget _buildErrorScreen(BuildContext context, String? errorMessage) {
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
@@ -241,7 +301,7 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  void _handleSearch(BuildContext context, WidgetRef ref, String query) async {
+  void _handleSearch(BuildContext context, String query) async {
     final message = await ref.read(weatherProvider.notifier).searchCity(query);
     if (message != null && context.mounted) {
       showDialog(
