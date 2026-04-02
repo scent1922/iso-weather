@@ -1,0 +1,106 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class SettingsState {
+  final bool useCelsius;
+  final String selectedCityId;
+  final bool useGps;
+  final bool notificationEnabled;
+  final int notificationHour;
+  final int notificationMinute;
+  final bool particleEnabled;
+
+  const SettingsState({
+    this.useCelsius = true,
+    this.selectedCityId = 'seoul',
+    this.useGps = true,
+    this.notificationEnabled = false,
+    this.notificationHour = 7,
+    this.notificationMinute = 0,
+    this.particleEnabled = true,
+  });
+
+  SettingsState copyWith({
+    bool? useCelsius,
+    String? selectedCityId,
+    bool? useGps,
+    bool? notificationEnabled,
+    int? notificationHour,
+    int? notificationMinute,
+    bool? particleEnabled,
+  }) {
+    return SettingsState(
+      useCelsius: useCelsius ?? this.useCelsius,
+      selectedCityId: selectedCityId ?? this.selectedCityId,
+      useGps: useGps ?? this.useGps,
+      notificationEnabled: notificationEnabled ?? this.notificationEnabled,
+      notificationHour: notificationHour ?? this.notificationHour,
+      notificationMinute: notificationMinute ?? this.notificationMinute,
+      particleEnabled: particleEnabled ?? this.particleEnabled,
+    );
+  }
+}
+
+class SettingsNotifier extends StateNotifier<SettingsState> {
+  SettingsNotifier() : super(const SettingsState()) {
+    _load();
+  }
+
+  Future<void> _load() async {
+    final prefs = await SharedPreferences.getInstance();
+    state = SettingsState(
+      useCelsius: prefs.getBool('useCelsius') ?? true,
+      selectedCityId: prefs.getString('selectedCityId') ?? 'seoul',
+      useGps: prefs.getBool('useGps') ?? true,
+      notificationEnabled: prefs.getBool('notificationEnabled') ?? false,
+      notificationHour: prefs.getInt('notificationHour') ?? 7,
+      notificationMinute: prefs.getInt('notificationMinute') ?? 0,
+      particleEnabled: prefs.getBool('particleEnabled') ?? true,
+    );
+  }
+
+  Future<void> _save() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('useCelsius', state.useCelsius);
+    await prefs.setString('selectedCityId', state.selectedCityId);
+    await prefs.setBool('useGps', state.useGps);
+    await prefs.setBool('notificationEnabled', state.notificationEnabled);
+    await prefs.setInt('notificationHour', state.notificationHour);
+    await prefs.setInt('notificationMinute', state.notificationMinute);
+    await prefs.setBool('particleEnabled', state.particleEnabled);
+  }
+
+  void setUseCelsius(bool value) {
+    state = state.copyWith(useCelsius: value);
+    _save();
+  }
+
+  void setSelectedCity(String cityId) {
+    state = state.copyWith(selectedCityId: cityId);
+    _save();
+  }
+
+  void setUseGps(bool value) {
+    state = state.copyWith(useGps: value);
+    _save();
+  }
+
+  void setNotificationEnabled(bool value) {
+    state = state.copyWith(notificationEnabled: value);
+    _save();
+  }
+
+  void setNotificationTime(int hour, int minute) {
+    state = state.copyWith(notificationHour: hour, notificationMinute: minute);
+    _save();
+  }
+
+  void setParticleEnabled(bool value) {
+    state = state.copyWith(particleEnabled: value);
+    _save();
+  }
+}
+
+final settingsProvider = StateNotifierProvider<SettingsNotifier, SettingsState>((ref) {
+  return SettingsNotifier();
+});
