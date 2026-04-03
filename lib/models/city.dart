@@ -25,6 +25,14 @@ class City {
     City(id: 'berlin', nameKo: '베를린', nameEn: 'Berlin', lat: 52.5200, lon: 13.4050),
     City(id: 'madrid', nameKo: '마드리드', nameEn: 'Madrid', lat: 40.4168, lon: -3.7038),
     City(id: 'barcelona', nameKo: '바르셀로나', nameEn: 'Barcelona', lat: 41.3851, lon: 2.1734),
+    // 대한민국 주요 도시
+    City(id: 'busan', nameKo: '부산광역시', nameEn: 'Busan', lat: 35.1796, lon: 129.0756),
+    City(id: 'daegu', nameKo: '대구광역시', nameEn: 'Daegu', lat: 35.8714, lon: 128.6014),
+    City(id: 'incheon', nameKo: '인천광역시', nameEn: 'Incheon', lat: 37.4563, lon: 126.7052),
+    City(id: 'daejeon', nameKo: '대전광역시', nameEn: 'Daejeon', lat: 36.3504, lon: 127.3845),
+    City(id: 'gwangju', nameKo: '광주광역시', nameEn: 'Gwangju', lat: 35.1595, lon: 126.8526),
+    City(id: 'ulsan', nameKo: '울산광역시', nameEn: 'Ulsan', lat: 35.5384, lon: 129.3114),
+    City(id: 'jeju', nameKo: '제주특별자치도', nameEn: 'Jeju', lat: 33.4996, lon: 126.5312),
   ];
 
   static City findById(String id) {
