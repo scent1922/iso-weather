@@ -33,6 +33,7 @@ class City {
     City(id: 'gwangju', nameKo: '광주광역시', nameEn: 'Gwangju', lat: 35.1595, lon: 126.8526),
     City(id: 'ulsan', nameKo: '울산광역시', nameEn: 'Ulsan', lat: 35.5384, lon: 129.3114),
     City(id: 'jeju', nameKo: '제주특별자치도', nameEn: 'Jeju', lat: 33.4996, lon: 126.5312),
+    City(id: 'sejong', nameKo: '세종특별자치시', nameEn: 'Sejong', lat: 36.4800, lon: 127.2590),
   ];
 
   static City findById(String id) {
