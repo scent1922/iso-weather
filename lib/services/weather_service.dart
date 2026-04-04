@@ -17,7 +17,7 @@ class WeatherService {
     final uri = Uri.parse(_baseUrl).replace(queryParameters: {
       'lat': lat.toString(),
       'lon': lon.toString(),
-      'exclude': 'minutely,alerts',
+      'exclude': 'minutely',
       'units': 'metric',
       'lang': 'ko',
       'appid': _apiKey,

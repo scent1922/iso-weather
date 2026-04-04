@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../services/clothing_recommender.dart';
 import '../services/notification_service.dart';
 
 class SettingsState {
@@ -10,6 +11,7 @@ class SettingsState {
   final int notificationHour;
   final int notificationMinute;
   final bool particleEnabled;
+  final SensitivityType sensitivity;
 
   const SettingsState({
     this.useCelsius = true,
@@ -19,6 +21,7 @@ class SettingsState {
     this.notificationHour = 7,
     this.notificationMinute = 0,
     this.particleEnabled = true,
+    this.sensitivity = SensitivityType.normal,
   });
 
   SettingsState copyWith({
@@ -29,6 +32,7 @@ class SettingsState {
     int? notificationHour,
     int? notificationMinute,
     bool? particleEnabled,
+    SensitivityType? sensitivity,
   }) {
     return SettingsState(
       useCelsius: useCelsius ?? this.useCelsius,
@@ -38,6 +42,7 @@ class SettingsState {
       notificationHour: notificationHour ?? this.notificationHour,
       notificationMinute: notificationMinute ?? this.notificationMinute,
       particleEnabled: particleEnabled ?? this.particleEnabled,
+      sensitivity: sensitivity ?? this.sensitivity,
     );
   }
 }
@@ -52,6 +57,7 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
 
   Future<void> _load() async {
     final prefs = await SharedPreferences.getInstance();
+    final sensitivityStr = prefs.getString('sensitivity') ?? 'normal';
     state = SettingsState(
       useCelsius: prefs.getBool('useCelsius') ?? true,
       selectedCityId: prefs.getString('selectedCityId') ?? 'seoul',
@@ -60,6 +66,7 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
       notificationHour: prefs.getInt('notificationHour') ?? 7,
       notificationMinute: prefs.getInt('notificationMinute') ?? 0,
       particleEnabled: prefs.getBool('particleEnabled') ?? true,
+      sensitivity: _sensitivityFromString(sensitivityStr),
     );
   }
 
@@ -72,6 +79,20 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
     await prefs.setInt('notificationHour', state.notificationHour);
     await prefs.setInt('notificationMinute', state.notificationMinute);
     await prefs.setBool('particleEnabled', state.particleEnabled);
+    await prefs.setString('sensitivity', state.sensitivity.name);
+  }
+
+  static SensitivityType _sensitivityFromString(String value) {
+    switch (value) {
+      case 'sensitiveCold':
+        return SensitivityType.sensitiveCold;
+      case 'sensitiveHot':
+        return SensitivityType.sensitiveHot;
+      case 'sensitiveBoth':
+        return SensitivityType.sensitiveBoth;
+      default:
+        return SensitivityType.normal;
+    }
   }
 
   void setUseCelsius(bool value) {
@@ -112,6 +133,11 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
 
   void setParticleEnabled(bool value) {
     state = state.copyWith(particleEnabled: value);
+    _save();
+  }
+
+  void setSensitivity(SensitivityType value) {
+    state = state.copyWith(sensitivity: value);
     _save();
   }
 }

@@ -134,7 +134,15 @@ class WeatherNotifier extends StateNotifier<WeatherState> {
       sunset: data.sunset,
       lat: city.lat,
     );
-    final recommendation = _clothingRecommender.getRecommendation(data);
+    final settings = _ref.read(settingsProvider);
+    final todayDaily = data.daily.isNotEmpty ? data.daily.first : null;
+    final recommendation = _clothingRecommender.getRecommendation(
+      data,
+      data.hourly,
+      todayDaily,
+      data.alerts,
+      settings.sensitivity,
+    );
 
     state = WeatherState(
       status: offline ? WeatherStatus.offline : WeatherStatus.success,
@@ -191,7 +199,15 @@ class WeatherNotifier extends StateNotifier<WeatherState> {
         sunset: data.sunset,
         lat: result.lat,
       );
-      final recommendation = _clothingRecommender.getRecommendation(data);
+      final settings = _ref.read(settingsProvider);
+      final todayDaily = data.daily.isNotEmpty ? data.daily.first : null;
+      final recommendation = _clothingRecommender.getRecommendation(
+        data,
+        data.hourly,
+        todayDaily,
+        data.alerts,
+        settings.sensitivity,
+      );
 
       state = WeatherState(
         status: WeatherStatus.success,

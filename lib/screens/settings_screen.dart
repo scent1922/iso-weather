@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/city.dart';
 import '../providers/settings_provider.dart';
 import '../providers/weather_provider.dart';
+import '../services/clothing_recommender.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -37,6 +38,45 @@ class SettingsScreen extends ConsumerWidget {
             value: settings.useCelsius,
             onChanged: (v) => notifier.setUseCelsius(v),
           ),
+
+          const Divider(color: Colors.white12),
+          _buildSection('체감 유형'),
+
+          _buildSensitivityOption(
+            context,
+            ref,
+            title: '보통',
+            subtitle: '일반적인 체감 온도 기준',
+            value: SensitivityType.normal,
+            current: settings.sensitivity,
+          ),
+          _buildSensitivityOption(
+            context,
+            ref,
+            title: '추위를 많이 타요',
+            subtitle: '체감온도를 3도 낮게 계산해요',
+            value: SensitivityType.sensitiveCold,
+            current: settings.sensitivity,
+          ),
+          _buildSensitivityOption(
+            context,
+            ref,
+            title: '더위를 많이 타요',
+            subtitle: '체감온도를 3도 높게 계산해요',
+            value: SensitivityType.sensitiveHot,
+            current: settings.sensitivity,
+          ),
+          _buildSensitivityOption(
+            context,
+            ref,
+            title: '추위·더위 모두 많이 타요',
+            subtitle: '춥거나 더울 때 체감온도를 3도씩 보정해요',
+            value: SensitivityType.sensitiveBoth,
+            current: settings.sensitivity,
+          ),
+
+          const Divider(color: Colors.white12),
+          _buildSection('위치'),
 
           _buildSwitchTile(
             title: '현재 위치 사용',
@@ -142,6 +182,29 @@ class SettingsScreen extends ConsumerWidget {
       value: value,
       onChanged: onChanged,
       activeTrackColor: const Color(0xFF90CAF9),
+    );
+  }
+
+  Widget _buildSensitivityOption(
+    BuildContext context,
+    WidgetRef ref, {
+    required String title,
+    required String subtitle,
+    required SensitivityType value,
+    required SensitivityType current,
+  }) {
+    final isSelected = value == current;
+    return ListTile(
+      leading: Icon(
+        isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+        color: isSelected ? const Color(0xFF90CAF9) : Colors.white38,
+      ),
+      title: Text(title, style: const TextStyle(color: Colors.white)),
+      subtitle: Text(subtitle, style: const TextStyle(color: Colors.white60)),
+      onTap: () {
+        ref.read(settingsProvider.notifier).setSensitivity(value);
+        ref.read(weatherProvider.notifier).loadWeather();
+      },
     );
   }
 
