@@ -59,6 +59,21 @@ class City {
     City(id: 'geoje', nameKo: '거제시', nameEn: 'Geoje', lat: 34.8806, lon: 128.6211),
     City(id: 'gimhae', nameKo: '김해시', nameEn: 'Gimhae', lat: 35.2285, lon: 128.8894),
     City(id: 'seogwipo', nameKo: '서귀포시', nameEn: 'Seogwipo', lat: 33.2541, lon: 126.5600),
+    // 글로벌 도시 추가
+    City(id: 'rome', nameKo: '로마', nameEn: 'Rome', lat: 41.9028, lon: 12.4964),
+    City(id: 'florence', nameKo: '피렌체', nameEn: 'Florence', lat: 43.7696, lon: 11.2558),
+    City(id: 'venice', nameKo: '베니스', nameEn: 'Venice', lat: 45.4408, lon: 12.3155),
+    City(id: 'lisbon', nameKo: '리스본', nameEn: 'Lisbon', lat: 38.7223, lon: -9.1393),
+    City(id: 'porto', nameKo: '포르투', nameEn: 'Porto', lat: 41.1579, lon: -8.6291),
+    City(id: 'melbourne', nameKo: '멜버른', nameEn: 'Melbourne', lat: -37.8136, lon: 144.9631),
+    City(id: 'losangeles', nameKo: '로스앤젤레스', nameEn: 'Los Angeles', lat: 34.0522, lon: -118.2437),
+    City(id: 'washington', nameKo: '워싱턴 D.C.', nameEn: 'Washington D.C.', lat: 38.9072, lon: -77.0369),
+    City(id: 'sanfrancisco', nameKo: '샌프란시스코', nameEn: 'San Francisco', lat: 37.7749, lon: -122.4194),
+    City(id: 'bali', nameKo: '발리', nameEn: 'Bali', lat: -8.3405, lon: 115.0920),
+    City(id: 'dubai', nameKo: '두바이', nameEn: 'Dubai', lat: 25.2048, lon: 55.2708),
+    City(id: 'cairo', nameKo: '카이로', nameEn: 'Cairo', lat: 30.0444, lon: 31.2357),
+    City(id: 'guam', nameKo: '괌', nameEn: 'Guam', lat: 13.4443, lon: 144.7937),
+    City(id: 'hawaii', nameKo: '하와이', nameEn: 'Honolulu', lat: 21.3069, lon: -157.8583),
   ];
 
   static City findById(String id) {
