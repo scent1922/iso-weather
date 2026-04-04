@@ -74,6 +74,14 @@ class City {
     City(id: 'cairo', nameKo: '카이로', nameEn: 'Cairo', lat: 30.0444, lon: 31.2357),
     City(id: 'guam', nameKo: '괌', nameEn: 'Guam', lat: 13.4443, lon: 144.7937),
     City(id: 'hawaii', nameKo: '하와이', nameEn: 'Honolulu', lat: 21.3069, lon: -157.8583),
+    // 한국 추가
+    City(id: 'gwangyang', nameKo: '광양시', nameEn: 'Gwangyang', lat: 34.9407, lon: 127.6959),
+    City(id: 'naju', nameKo: '나주시', nameEn: 'Naju', lat: 35.0154, lon: 126.7106),
+    // 일본 추가
+    City(id: 'osaka', nameKo: '오사카', nameEn: 'Osaka', lat: 34.6937, lon: 135.5023),
+    City(id: 'kyoto', nameKo: '교토', nameEn: 'Kyoto', lat: 35.0116, lon: 135.7681),
+    City(id: 'fukuoka', nameKo: '후쿠오카', nameEn: 'Fukuoka', lat: 33.5904, lon: 130.4017),
+    City(id: 'sapporo', nameKo: '삿포로', nameEn: 'Sapporo', lat: 43.0618, lon: 141.3545),
   ];
 
   static City findById(String id) {
