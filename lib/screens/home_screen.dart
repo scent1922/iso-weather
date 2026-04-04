@@ -36,8 +36,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final weather = ref.watch(weatherProvider);
     final settings = ref.watch(settingsProvider);
 
+    // Match scaffold background to image background color
+    final isNight = weather.imagePath?.contains('_night_') ?? false;
+    final bgColor = isNight ? const Color(0xFF1B2038) : const Color(0xFF87CEEB);
+
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: bgColor,
       body: Stack(
         children: [
           PageView(
