@@ -5,6 +5,7 @@ import '../providers/settings_provider.dart';
 import '../providers/weather_provider.dart';
 import '../services/image_selector.dart';
 import '../widgets/clothing_card.dart';
+import '../widgets/coach_mark_overlay.dart';
 import '../widgets/offline_banner.dart';
 import '../widgets/particle_overlay.dart';
 import '../widgets/weather_background.dart';
@@ -99,6 +100,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               }),
             ),
           ),
+
+          // Coach mark tutorial overlay (shown if onboarding not complete)
+          if (!settings.onboardingComplete)
+            Positioned.fill(
+              child: CoachMarkOverlay(
+                onComplete: () {
+                  ref
+                      .read(settingsProvider.notifier)
+                      .setOnboardingComplete(true);
+                },
+              ),
+            ),
         ],
       ),
     );

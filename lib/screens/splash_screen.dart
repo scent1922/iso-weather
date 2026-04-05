@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/weather_provider.dart';
-import '../providers/settings_provider.dart';
 import 'home_screen.dart';
-import 'onboarding_screen.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -38,14 +36,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 
   void _navigateNext() {
-    final settings = ref.read(settingsProvider);
-    final destination = settings.onboardingComplete
-        ? const HomeScreen()
-        : const OnboardingScreen();
-
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => destination,
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            const HomeScreen(),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return FadeTransition(opacity: animation, child: child);
         },
