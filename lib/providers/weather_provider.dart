@@ -165,9 +165,38 @@ class WeatherNotifier extends StateNotifier<WeatherState> {
     state = state.copyWith(status: WeatherStatus.loading);
 
     try {
+      // First, try matching against supported cities by Korean/English name
+      final localMatch = City.findByName(query.trim());
+      if (localMatch != null) {
+        final data = await _weatherService.fetchWeather(localMatch.lat, localMatch.lon);
+        final settings = _ref.read(settingsProvider);
+        final localNow = data.localNow;
+        final imagePath = ImageSelector.getImagePath(
+          cityId: localMatch.id,
+          now: localNow,
+          weatherCode: data.weatherId,
+          sunrise: data.sunrise,
+          sunset: data.sunset,
+          lat: localMatch.lat,
+        );
+        final todayDaily = data.daily.isNotEmpty ? data.daily.first : null;
+        final recommendation = _clothingRecommender.getRecommendation(
+          data, data.hourly, todayDaily, data.alerts, settings.sensitivity,
+        );
+        state = WeatherState(
+          status: WeatherStatus.success,
+          data: data,
+          city: localMatch,
+          imagePath: imagePath,
+          recommendation: recommendation,
+          lastUpdate: DateTime.now(),
+        );
+        return null;
+      }
+
+      // If no local match, try Geocoding API
       final result = await _weatherService.searchCity(query);
       if (result == null) {
-        // Restore previous state
         if (state.data != null) {
           state = state.copyWith(status: WeatherStatus.success);
         }

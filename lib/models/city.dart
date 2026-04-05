@@ -84,6 +84,28 @@ class City {
     City(id: 'sapporo', nameKo: '삿포로', nameEn: 'Sapporo', lat: 43.0618, lon: 141.3545),
   ];
 
+  /// Search by Korean name, English name, or short form.
+  /// Matches: "삿포로", "삿포로시", "Sapporo", "서울", "서울특별시", etc.
+  static City? findByName(String query) {
+    final q = query.toLowerCase().trim();
+    for (final city in supportedCities) {
+      final ko = city.nameKo.toLowerCase();
+      final en = city.nameEn.toLowerCase();
+      // Exact match
+      if (ko == q || en == q) return city;
+      // Korean name contains query or query contains Korean name
+      if (ko.contains(q) || q.contains(ko.replaceAll(RegExp(r'(시|도|특별시|광역시|특별자치시|특별자치도)$'), ''))) {
+        return city;
+      }
+      // Korean short form (remove suffixes like 시, 도, 특별시, etc.)
+      final koShort = ko.replaceAll(RegExp(r'(특별자치도|특별자치시|특별시|광역시|시|도)$'), '');
+      if (koShort == q || q == koShort) return city;
+      // English case-insensitive
+      if (en.contains(q) || q.contains(en)) return city;
+    }
+    return null;
+  }
+
   static City findById(String id) {
     return supportedCities.firstWhere(
       (city) => city.id == id,
