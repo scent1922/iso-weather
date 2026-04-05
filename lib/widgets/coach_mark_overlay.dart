@@ -65,7 +65,7 @@ class _CoachMarkOverlayState extends State<CoachMarkOverlay>
           tooltipAbove: true,
         ),
         CoachMarkStep(
-          description: '옆으로 스와이프하면 상세 날씨를 볼 수 있어요',
+          description: '옆으로 스와이프하면\n상세 날씨를 볼 수 있어요',
           spotlightRectBuilder: (size) {
             final width = size.width * 0.22;
             final left = (size.width - width) / 2;
@@ -74,6 +74,17 @@ class _CoachMarkOverlayState extends State<CoachMarkOverlay>
             return Rect.fromLTWH(left, top, width, height);
           },
           tooltipAbove: true,
+        ),
+        CoachMarkStep(
+          description: '온도 민감도에 따라\n옷차림 추천 정도를\n설정할 수 있어요',
+          spotlightRectBuilder: (size) {
+            final width = size.width * 0.14;
+            final left = size.width - width - 16;
+            final height = size.height * 0.055;
+            final top = size.height * 0.06;
+            return Rect.fromLTWH(left, top, width, height);
+          },
+          tooltipAbove: false,
         ),
       ];
 
