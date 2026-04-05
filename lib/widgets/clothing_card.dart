@@ -22,6 +22,16 @@ class _ClothingCardState extends State<ClothingCard> {
     WidgetsBinding.instance.addPostFrameCallback((_) => _checkCanScroll());
   }
 
+  @override
+  void didUpdateWidget(ClothingCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.message != widget.message) {
+      _scrollController.jumpTo(0);
+      _scrollFraction = 0.0;
+      WidgetsBinding.instance.addPostFrameCallback((_) => _checkCanScroll());
+    }
+  }
+
   void _checkCanScroll() {
     if (_scrollController.hasClients) {
       setState(() {
