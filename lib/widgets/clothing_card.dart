@@ -14,7 +14,8 @@ class ClothingCard extends StatelessWidget {
         filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+          height: 120,
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           decoration: BoxDecoration(
             color: Colors.white.withValues(alpha: 0.18),
             borderRadius: BorderRadius.circular(16),
@@ -23,29 +24,45 @@ class ClothingCard extends StatelessWidget {
               width: 0.5,
             ),
           ),
-          child: Column(
-            children: [
-              const Icon(
-                Icons.checkroom,
-                color: Colors.white,
-                size: 20,
+          child: ShaderMask(
+            shaderCallback: (Rect bounds) {
+              return const LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Colors.transparent, Colors.white, Colors.white, Colors.transparent],
+                stops: [0.0, 0.08, 0.9, 1.0],
+              ).createShader(bounds);
+            },
+            blendMode: BlendMode.dstIn,
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Column(
+                children: [
+                  const SizedBox(height: 4),
+                  const Icon(
+                    Icons.checkroom,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    message,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 15,
+                      color: Colors.white,
+                      height: 1.6,
+                      shadows: [
+                        Shadow(offset: Offset(0, 1), blurRadius: 3, color: Color(0xCC000000)),
+                        Shadow(offset: Offset(0, 0), blurRadius: 8, color: Color(0x99000000)),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                ],
               ),
-              const SizedBox(height: 8),
-              Text(
-                message,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 16,
-                  color: Colors.white,
-                  height: 1.6,
-                  shadows: [
-                    Shadow(offset: Offset(0, 1), blurRadius: 3, color: Color(0xCC000000)),
-                    Shadow(offset: Offset(0, 0), blurRadius: 8, color: Color(0x99000000)),
-                  ],
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),
