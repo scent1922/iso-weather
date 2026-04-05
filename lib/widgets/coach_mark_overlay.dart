@@ -32,7 +32,7 @@ class _CoachMarkOverlayState extends State<CoachMarkOverlay>
 
   static List<CoachMarkStep> _buildSteps() => [
         CoachMarkStep(
-          description: '여기서 전 세계 도시를 검색할 수 있어요',
+          description: '여기서 전 세계 도시를\n검색할 수 있어요',
           spotlightRectBuilder: (size) {
             final top = size.height * 0.12;
             final width = size.width * 0.72;
