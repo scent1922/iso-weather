@@ -54,12 +54,12 @@ class _CoachMarkOverlayState extends State<CoachMarkOverlay>
           tooltipAbove: false,
         ),
         CoachMarkStep(
-          description: '하루 전체를 분석한 맞춤 옷차림 추천이에요',
+          description: '하루 전체를 분석한\n맞춤 옷차림 추천이에요',
           spotlightRectBuilder: (size) {
-            final width = size.width * 0.90;
+            final width = size.width * 0.92;
             final left = (size.width - width) / 2;
-            final height = size.height * 0.11;
-            final top = size.height * 0.80;
+            final height = size.height * 0.16;
+            final top = size.height * 0.75;
             return Rect.fromLTWH(left, top, width, height);
           },
           tooltipAbove: true,
