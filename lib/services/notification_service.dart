@@ -10,7 +10,7 @@ class NotificationService {
       FlutterLocalNotificationsPlugin();
 
   static const int _notificationId = 0;
-  static const String _channelId = 'minicast_daily';
+  static const String _channelId = 'miniweather_daily';
   static const String _channelName = '매일 아침 알림';
 
   Future<void> initialize() async {
@@ -79,7 +79,7 @@ class NotificationService {
 
     await _plugin.zonedSchedule(
       _notificationId,
-      'Minicast — 오늘의 날씨',
+      'MiniWeather — 오늘의 날씨',
       '오늘의 옷차림 추천을 확인해보세요!',
       scheduledDate,
       notificationDetails,

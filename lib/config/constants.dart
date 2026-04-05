@@ -1,6 +1,6 @@
 class AppConstants {
-  static const String appName = 'Minicast';
-  static const String appNameKo = 'Minicast';
+  static const String appName = 'MiniWeather';
+  static const String appNameKo = 'MiniWeather';
   static const Duration cacheValidity = Duration(minutes: 30);
   static const Duration apiTimeout = Duration(seconds: 10);
   static const Duration imageFadeDuration = Duration(milliseconds: 800);

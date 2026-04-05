@@ -72,7 +72,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
               // App name
               const Text(
-                'Minicast',
+                'MiniWeather',
                 style: TextStyle(
                   fontFamily: 'Poppins',
                   fontSize: 48,

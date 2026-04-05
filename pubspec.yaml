@@ -1,5 +1,5 @@
 name: iso_weather
-description: "Minicast — 아이소메트릭 감성 날씨 앱"
+description: "MiniWeather — 아이소메트릭 감성 날씨 앱"
 publish_to: 'none'
 version: 1.0.0+1
 
