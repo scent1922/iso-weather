@@ -54,8 +54,7 @@ class ClothingCard extends StatelessWidget {
                       color: Colors.white,
                       height: 1.6,
                       shadows: [
-                        Shadow(offset: Offset(0, 1), blurRadius: 3, color: Color(0xCC000000)),
-                        Shadow(offset: Offset(0, 0), blurRadius: 8, color: Color(0x99000000)),
+                        Shadow(offset: Offset(0, 1), blurRadius: 4, color: Color(0xAA000000)),
                       ],
                     ),
                   ),
