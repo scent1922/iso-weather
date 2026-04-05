@@ -142,7 +142,7 @@ class SettingsScreen extends ConsumerWidget {
           const ListTile(
             title: Text('크레딧', style: TextStyle(color: Colors.white)),
             subtitle:
-                Text('MiniWeather by scent1922', style: TextStyle(color: Colors.white60)),
+                Text('MiniWeather by CHOI YEONSOON', style: TextStyle(color: Colors.white60)),
           ),
         ],
       ),
