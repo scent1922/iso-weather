@@ -48,21 +48,10 @@ class _CoachMarkOverlayState extends State<CoachMarkOverlay>
             final top = size.height * 0.185;
             final width = size.width * 0.65;
             final left = (size.width - width) / 2;
-            final height = size.height * 0.14;
+            final height = size.height * 0.19;
             return Rect.fromLTWH(left, top, width, height);
           },
           tooltipAbove: false,
-        ),
-        CoachMarkStep(
-          description: '계절, 시간, 날씨에 따라 배경이 바뀌어요',
-          spotlightRectBuilder: (size) {
-            final width = size.width * 0.85;
-            final left = (size.width - width) / 2;
-            final height = size.height * 0.38;
-            final top = (size.height - height) / 2 - size.height * 0.02;
-            return Rect.fromLTWH(left, top, width, height);
-          },
-          tooltipAbove: true,
         ),
         CoachMarkStep(
           description: '하루 전체를 분석한 맞춤 옷차림 추천이에요',
