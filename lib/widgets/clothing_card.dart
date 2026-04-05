@@ -1,10 +1,49 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 
-class ClothingCard extends StatelessWidget {
+class ClothingCard extends StatefulWidget {
   final String message;
 
   const ClothingCard({super.key, required this.message});
+
+  @override
+  State<ClothingCard> createState() => _ClothingCardState();
+}
+
+class _ClothingCardState extends State<ClothingCard> {
+  final ScrollController _scrollController = ScrollController();
+  double _scrollFraction = 0.0;
+  bool _canScroll = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkCanScroll());
+  }
+
+  void _checkCanScroll() {
+    if (_scrollController.hasClients) {
+      setState(() {
+        _canScroll = _scrollController.position.maxScrollExtent > 0;
+      });
+    }
+  }
+
+  void _onScroll() {
+    if (!_scrollController.hasClients) return;
+    final max = _scrollController.position.maxScrollExtent;
+    if (max <= 0) return;
+    setState(() {
+      _scrollFraction = (_scrollController.offset / max).clamp(0.0, 1.0);
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,20 +77,17 @@ class ClothingCard extends StatelessWidget {
                   },
                   blendMode: BlendMode.dstIn,
                   child: SingleChildScrollView(
+                    controller: _scrollController,
                     physics: const BouncingScrollPhysics(),
                     child: Padding(
                       padding: const EdgeInsets.only(right: 8),
                       child: Column(
                         children: [
                           const SizedBox(height: 4),
-                          const Icon(
-                            Icons.checkroom,
-                            color: Colors.white,
-                            size: 20,
-                          ),
+                          const Icon(Icons.checkroom, color: Colors.white, size: 20),
                           const SizedBox(height: 8),
                           Text(
-                            message,
+                            widget.message,
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                               fontFamily: 'Poppins',
@@ -71,25 +107,40 @@ class ClothingCard extends StatelessWidget {
                 ),
               ),
               // Scroll indicator bar
-              Container(
-                width: 3,
-                margin: const EdgeInsets.symmetric(vertical: 8),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(1.5),
+              if (_canScroll)
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    const trackMargin = 8.0;
+                    final trackHeight = constraints.maxHeight - trackMargin * 2;
+                    const handleHeight = 24.0;
+                    final maxOffset = trackHeight - handleHeight;
+                    final handleOffset = maxOffset * _scrollFraction;
+
+                    return Container(
+                      width: 3,
+                      margin: const EdgeInsets.symmetric(vertical: trackMargin),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(1.5),
+                      ),
+                      child: Stack(
+                        children: [
+                          Positioned(
+                            top: handleOffset,
+                            child: Container(
+                              width: 3,
+                              height: handleHeight,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.5),
+                                borderRadius: BorderRadius.circular(1.5),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
                 ),
-                child: Align(
-                  alignment: Alignment.topCenter,
-                  child: Container(
-                    width: 3,
-                    height: 30,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.5),
-                      borderRadius: BorderRadius.circular(1.5),
-                    ),
-                  ),
-                ),
-              ),
               const SizedBox(width: 12),
             ],
           ),
