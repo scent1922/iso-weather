@@ -12,6 +12,7 @@ class SettingsState {
   final int notificationMinute;
   final bool particleEnabled;
   final SensitivityType sensitivity;
+  final bool onboardingComplete;
 
   const SettingsState({
     this.useCelsius = true,
@@ -22,6 +23,7 @@ class SettingsState {
     this.notificationMinute = 0,
     this.particleEnabled = true,
     this.sensitivity = SensitivityType.normal,
+    this.onboardingComplete = false,
   });
 
   SettingsState copyWith({
@@ -33,6 +35,7 @@ class SettingsState {
     int? notificationMinute,
     bool? particleEnabled,
     SensitivityType? sensitivity,
+    bool? onboardingComplete,
   }) {
     return SettingsState(
       useCelsius: useCelsius ?? this.useCelsius,
@@ -43,6 +46,7 @@ class SettingsState {
       notificationMinute: notificationMinute ?? this.notificationMinute,
       particleEnabled: particleEnabled ?? this.particleEnabled,
       sensitivity: sensitivity ?? this.sensitivity,
+      onboardingComplete: onboardingComplete ?? this.onboardingComplete,
     );
   }
 }
@@ -67,6 +71,7 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
       notificationMinute: prefs.getInt('notificationMinute') ?? 0,
       particleEnabled: prefs.getBool('particleEnabled') ?? true,
       sensitivity: _sensitivityFromString(sensitivityStr),
+      onboardingComplete: prefs.getBool('onboardingComplete') ?? false,
     );
   }
 
@@ -80,6 +85,7 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
     await prefs.setInt('notificationMinute', state.notificationMinute);
     await prefs.setBool('particleEnabled', state.particleEnabled);
     await prefs.setString('sensitivity', state.sensitivity.name);
+    await prefs.setBool('onboardingComplete', state.onboardingComplete);
   }
 
   static SensitivityType _sensitivityFromString(String value) {
@@ -138,6 +144,11 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
 
   void setSensitivity(SensitivityType value) {
     state = state.copyWith(sensitivity: value);
+    _save();
+  }
+
+  void setOnboardingComplete(bool value) {
+    state = state.copyWith(onboardingComplete: value);
     _save();
   }
 }
